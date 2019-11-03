@@ -1,0 +1,33 @@
+import re
+import json
+import html
+
+#cijeli html
+htmlTxt = open('podaci.htm').read() #.splitlines()
+AllHtml = html.unescape(htmlTxt)
+
+#rastepi sve po paragrafima
+paragrafi = re.split('<p>', AllHtml)
+
+
+listaPojmova=[]
+#liste u listi - U svakoj je riječ/riječi do </span> glavni pojam
+for p in paragrafi:
+    list = re.split('<span class="font6">',p)
+    list.pop(0)
+    listaPojmova.append(list)
+
+listaPojmova.pop(0)
+separated=[]
+for subList in listaPojmova:
+    for line in subList:
+        razdvojeno = re.split('</span>',line,  maxsplit=1)
+        separated.append(razdvojeno)
+#spremi sve u riječnik
+d= {}
+for pojam in separated:
+    d[pojam[0]]= pojam[1]
+#svaki pojam  = {razdvojeno[0]: razdvojeno[1]}
+s = json.dumps(d)
+open("outFile.json","w").write(s)
+d
